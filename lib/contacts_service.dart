@@ -302,21 +302,15 @@ class Contact {
         androidAccountName: androidAccountName ?? other.androidAccountName,
         emails: emails == null
             ? other.emails
-            : emails!
-                .toSet()
-                .union(other.emails?.toSet() ?? <dynamic>{})
-                .toList(),
+            : emails!.toSet().union(other.emails?.toSet() ?? <Item>{}).toList(),
         phones: phones == null
             ? other.phones
-            : phones!
-                .toSet()
-                .union(other.phones?.toSet() ?? <dynamic>{})
-                .toList(),
+            : phones!.toSet().union(other.phones?.toSet() ?? <Item>{}).toList(),
         postalAddresses: postalAddresses == null
             ? other.postalAddresses
             : postalAddresses!
                 .toSet()
-                .union(other.postalAddresses?.toSet() ?? <dynamic>{})
+                .union(other.postalAddresses?.toSet() ?? <PostalAddress>{})
                 .toList(),
         avatar: avatar ?? other.avatar,
         birthday: birthday ?? other.birthday,
@@ -484,9 +478,7 @@ class Item {
 
   @override
   bool operator ==(Object other) {
-    return other is Item &&
-        label == other.label &&
-        value == other.value;
+    return other is Item && label == other.label && value == other.value;
   }
 
   @override
