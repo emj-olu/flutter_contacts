@@ -12,7 +12,7 @@ class ContactListPage extends StatefulWidget {
 }
 
 class _ContactListPageState extends State<ContactListPage> {
-  List<Contact> _contacts;
+  late List<Contact> _contacts;
 
   @override
   void initState() {
@@ -41,7 +41,7 @@ class _ContactListPageState extends State<ContactListPage> {
 
   void updateContact() async {
     Contact ninja = _contacts
-        .firstWhere((contact) => contact.familyName.startsWith("Ninja"));
+        .firstWhere((contact) => contact.familyName!.startsWith("Ninja"));
     ninja.avatar = null;
     await ContactsService.updateContact(ninja);
 
@@ -87,9 +87,10 @@ class _ContactListPageState extends State<ContactListPage> {
         },
       ),
       body: SafeArea(
+        // ignore: unnecessary_null_comparison
         child: _contacts != null
             ? ListView.builder(
-                itemCount: _contacts.length ?? 0,
+                itemCount: _contacts.length,
                 itemBuilder: (BuildContext context, int index) {
                   Contact c = _contacts.elementAt(index);
                   return ListTile(
@@ -101,7 +102,7 @@ class _ContactListPageState extends State<ContactListPage> {
                                     contactOnDeviceHasBeenUpdated,
                               )));
                     },
-                    leading: (c.avatar != null && c.avatar.length > 0)
+                    leading: (c.avatar != null && c.avatar!.isNotEmpty)
                         ? CircleAvatar(backgroundImage: MemoryImage(c.avatar))
                         : CircleAvatar(child: Text(c.initials())),
                     title: Text(c.displayName ?? ""),
@@ -124,7 +125,9 @@ class _ContactListPageState extends State<ContactListPage> {
 }
 
 class ContactDetailsPage extends StatelessWidget {
-  const ContactDetailsPage(this._contact, {Key? key, this.onContactDeviceSave}) : super(key: key);
+  const ContactDetailsPage(this._contact,
+      {Key? key, required this.onContactDeviceSave})
+      : super(key: key);
 
   final Contact _contact;
   final Function(Contact) onContactDeviceSave;
@@ -134,7 +137,7 @@ class ContactDetailsPage extends StatelessWidget {
       var contact = await ContactsService.openExistingContact(_contact,
           iOSLocalizedLabels: iOSLocalizedLabels);
       onContactDeviceSave(contact);
-          Navigator.of(context).pop();
+      Navigator.of(context).pop();
     } on FormOperationException catch (e) {
       switch (e.errorCode) {
         case FormOperationErrorCode.FORM_OPERATION_CANCELED:
@@ -325,7 +328,7 @@ class _AddContactPageState extends State<AddContactPage> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              _formKey.currentState.save();
+              _formKey.currentState?.save();
               contact.postalAddresses = [address];
               ContactsService.addContact(contact);
               Navigator.of(context).pop();
@@ -409,7 +412,7 @@ class _AddContactPageState extends State<AddContactPage> {
 }
 
 class UpdateContactsPage extends StatefulWidget {
-  const UpdateContactsPage({Key? key, @required this.contact}) : super(key: key);
+  const UpdateContactsPage({Key? key, required this.contact}) : super(key: key);
 
   final Contact contact;
 
@@ -418,7 +421,7 @@ class UpdateContactsPage extends StatefulWidget {
 }
 
 class _UpdateContactsPageState extends State<UpdateContactsPage> {
-  Contact contact;
+  late Contact contact;
   PostalAddress address = PostalAddress(label: "Home");
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -440,11 +443,11 @@ class _UpdateContactsPageState extends State<UpdateContactsPage> {
               color: Colors.white,
             ),
             onPressed: () async {
-              _formKey.currentState.save();
+              _formKey.currentState?.save();
               contact.postalAddresses = [address];
               await ContactsService.updateContact(contact);
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => const ContactListPage()));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const ContactListPage()));
             },
           ),
         ],

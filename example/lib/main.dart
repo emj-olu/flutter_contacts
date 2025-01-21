@@ -17,9 +17,10 @@ class ContactsExampleApp extends StatelessWidget {
     return MaterialApp(
       home: const HomePage(),
       routes: <String, WidgetBuilder>{
-        "/add": (BuildContext context) => AddContactPage(),
-        "/contactsList": (BuildContext context) => ContactListPage(),
-        "/nativeContactPicker": (BuildContext context) => ContactPickerPage(),
+        "/add": (BuildContext context) => const AddContactPage(),
+        "/contactsList": (BuildContext context) => const ContactListPage(),
+        "/nativeContactPicker": (BuildContext context) =>
+            const ContactPickerPage(),
       },
     );
   }
@@ -36,14 +37,14 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _askPermissions(null);
+    _askPermissions("");
   }
 
   Future<void> _askPermissions(String routeName) async {
     PermissionStatus permissionStatus = await _getContactPermission();
     if (permissionStatus == PermissionStatus.granted) {
       Navigator.of(context).pushNamed(routeName);
-        } else {
+    } else {
       _handleInvalidPermissions(permissionStatus);
     }
   }
